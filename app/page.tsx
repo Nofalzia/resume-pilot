@@ -1,3 +1,4 @@
+import ResumeCopilot from "@/components/ai/ResumeCopilot";
 export default function Home() {
   return (
     <main className="min-h-screen flex items-center justify-center">
@@ -10,6 +11,7 @@ export default function Home() {
           AI Resume Builder
         </p>
       </div>
+      <ResumeCopilot />
     </main>
   );
 }
