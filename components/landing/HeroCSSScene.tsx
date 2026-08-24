@@ -4,260 +4,341 @@ import { useEffect, useRef, useCallback } from 'react'
 
 /**
  * CSS-only 3D layered document composition.
- * Three planes representing: raw resume → AI insight → job alignment.
- * Reacts to pointer movement with subtle tilt.
- * No Three.js — zero extra bundle weight.
- * Phase 6 will optionally replace this with a Three.js scene on desktop.
+ *
+ * Three planes: raw resume → AI insight → job alignment.
+ * Pointer-reactive tilt via a lerped RAF loop.
+ *
+ * Phase 5 additions (Option C):
+ *   A — Slow accent-glow pulse on the analysis card (CSS keyframe)
+ *   B — Score counter 0→78 on mount; keyword badges fade in with stagger
+ *
+ * All animations are skipped when prefers-reduced-motion: reduce is set.
  */
 export function HeroCSSScene() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const rafRef = useRef<number>(0)
-  const targetRef = useRef({ x: 0, y: 0 })
-  const currentRef = useRef({ x: 0, y: 0 })
+  const sceneRef    = useRef<HTMLDivElement>(null)
+  const scoreRef    = useRef<HTMLSpanElement>(null)
+  const rafTiltRef  = useRef<number>(0)
+  const rafCountRef = useRef<number>(0)
+  const target      = useRef({ x: 0, y: 0 })
+  const current     = useRef({ x: 0, y: 0 })
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    const el = containerRef.current
+  // ── Pointer-reactive tilt ─────────────────────────────────────────
+  const onMouseMove = useCallback((e: MouseEvent) => {
+    const el = sceneRef.current
     if (!el) return
     const rect = el.getBoundingClientRect()
-    // Normalise pointer position to -1 … 1
-    targetRef.current = {
-      x: ((e.clientX - rect.left) / rect.width - 0.5) * 2,
-      y: ((e.clientY - rect.top) / rect.height - 0.5) * 2,
+    target.current = {
+      x: ((e.clientX - rect.left) / rect.width  - 0.5) * 2,
+      y: ((e.clientY - rect.top)  / rect.height - 0.5) * 2,
     }
   }, [])
 
-  const handleMouseLeave = useCallback(() => {
-    targetRef.current = { x: 0, y: 0 }
+  const onMouseLeave = useCallback(() => {
+    target.current = { x: 0, y: 0 }
   }, [])
 
   useEffect(() => {
-    const el = containerRef.current
+    const el = sceneRef.current
     if (!el) return
 
-    // Skip pointer tilt on touch devices
-    const isTouch = window.matchMedia('(hover: none)').matches
-    if (isTouch) return
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) return // static composition on reduced-motion
 
-    el.addEventListener('mousemove', handleMouseMove)
-    el.addEventListener('mouseleave', handleMouseLeave)
+    const isTouchDevice = window.matchMedia('(hover: none)').matches
+    if (isTouchDevice) return // no pointer tilt on touch
 
-    const MAX_TILT = 10 // degrees
+    el.addEventListener('mousemove', onMouseMove)
+    el.addEventListener('mouseleave', onMouseLeave)
 
-    function tick() {
-      // Lerp toward target for smooth follow
-      currentRef.current.x += (targetRef.current.x - currentRef.current.x) * 0.06
-      currentRef.current.y += (targetRef.current.y - currentRef.current.y) * 0.06
+    const MAX_TILT = 9 // degrees
 
-      const rx = -currentRef.current.y * MAX_TILT
-      const ry = currentRef.current.x * MAX_TILT
+    function tickTilt() {
+      current.current.x += (target.current.x - current.current.x) * 0.055
+      current.current.y += (target.current.y - current.current.y) * 0.055
 
-      if (el) {
-        el.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`
-      }
+      const rx = -current.current.y * MAX_TILT
+      const ry =  current.current.x * MAX_TILT
 
-      rafRef.current = requestAnimationFrame(tick)
+      if (el) el.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`
+
+      rafTiltRef.current = requestAnimationFrame(tickTilt)
     }
 
-    rafRef.current = requestAnimationFrame(tick)
+    rafTiltRef.current = requestAnimationFrame(tickTilt)
 
     return () => {
-      el.removeEventListener('mousemove', handleMouseMove)
-      el.removeEventListener('mouseleave', handleMouseLeave)
-      cancelAnimationFrame(rafRef.current)
+      el.removeEventListener('mousemove', onMouseMove)
+      el.removeEventListener('mouseleave', onMouseLeave)
+      cancelAnimationFrame(rafTiltRef.current)
     }
-  }, [handleMouseMove, handleMouseLeave])
+  }, [onMouseMove, onMouseLeave])
+
+  // ── Score counter 0 → 78 ─────────────────────────────────────────
+  useEffect(() => {
+    const el = scoreRef.current
+    if (!el) return
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReduced) {
+      el.textContent = '78'
+      return
+    }
+
+    const TARGET   = 78
+    const DURATION = 1200 // ms
+    const DELAY    = 700  // start after card entry animation
+
+    const timeout = setTimeout(() => {
+      const startTime = performance.now()
+
+      function tickCount(now: number) {
+        const elapsed  = now - startTime
+        const progress = Math.min(elapsed / DURATION, 1)
+        // Ease-out expo for the satisfying "snap to target" feel
+        const eased    = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress)
+
+        if (el) el.textContent = String(Math.round(eased * TARGET))
+
+        if (progress < 1) {
+          rafCountRef.current = requestAnimationFrame(tickCount)
+        }
+      }
+
+      rafCountRef.current = requestAnimationFrame(tickCount)
+    }, DELAY)
+
+    return () => {
+      clearTimeout(timeout)
+      cancelAnimationFrame(rafCountRef.current)
+    }
+  }, [])
 
   return (
     <div
       aria-hidden="true"
-      style={{
-        perspective: '900px',
-        perspectiveOrigin: '50% 45%',
-        width: '100%',
-        maxWidth: '420px',
-        margin: '0 auto',
-        userSelect: 'none',
-      }}
+      style={{ perspective: '900px', perspectiveOrigin: '50% 45%', width: '100%', maxWidth: '420px', margin: '0 auto', userSelect: 'none' }}
     >
-      {/* p.s. screen readers see nothing — the section has its own description */}
       <div
-        ref={containerRef}
+        ref={sceneRef}
         style={{
           position: 'relative',
           width: '100%',
-          aspectRatio: '4/3',
+          aspectRatio: '4 / 3',
           transformStyle: 'preserve-3d',
-          transition: 'transform 0.05s linear',
+          // Gentle idle float on desktop, skipped by reduced-motion rule in globals.css
+          animation: 'float 5s ease-in-out infinite',
         }}
       >
-        {/* Layer 1 — raw resume (back) */}
-        <DocumentPlane
-          z={-40}
-          rotateY={-4}
-          rotateX={2}
-          opacity={0.45}
-          scale={0.92}
-          delay={0}
-          content="resume"
-        />
+        <Layer z={-44} ry={-4} rx={2} opacity={0.42} scale={0.91} delay={0}>
+          <ResumeLayerContent />
+        </Layer>
 
-        {/* Layer 2 — AI insight overlay (middle) */}
-        <DocumentPlane
-          z={0}
-          rotateY={0}
-          rotateX={0}
-          opacity={0.85}
-          scale={1}
-          delay={120}
-          content="analysis"
-        />
+        <Layer z={0} ry={0} rx={0} opacity={1} scale={1} delay={100} isAccent>
+          <AnalysisLayerContent scoreRef={scoreRef} />
+        </Layer>
 
-        {/* Layer 3 — job alignment (front) */}
-        <DocumentPlane
-          z={44}
-          rotateY={3}
-          rotateX={-1}
-          opacity={1}
-          scale={0.94}
-          delay={240}
-          content="job"
-        />
+        <Layer z={46} ry={3} rx={-1} opacity={0.95} scale={0.93} delay={200}>
+          <JobLayerContent />
+        </Layer>
       </div>
     </div>
   )
 }
 
-type PlaneContent = 'resume' | 'analysis' | 'job'
+// ── Layer wrapper ──────────────────────────────────────────────────
 
-interface DocumentPlaneProps {
+interface LayerProps {
   z: number
-  rotateY: number
-  rotateX: number
+  ry: number
+  rx: number
   opacity: number
   scale: number
   delay: number
-  content: PlaneContent
+  isAccent?: boolean
+  children: React.ReactNode
 }
 
-function DocumentPlane({ z, rotateY, rotateX, opacity, scale, delay, content }: DocumentPlaneProps) {
-  const isAnalysis = content === 'analysis'
-  const isJob = content === 'job'
-
+function Layer({ z, ry, rx, opacity, scale, delay, isAccent, children }: LayerProps) {
   return (
     <div
       style={{
         position: 'absolute',
         inset: 0,
-        transform: `translateZ(${z}px) rotateY(${rotateY}deg) rotateX(${rotateX}deg) scale(${scale})`,
+        transform: `translateZ(${z}px) rotateY(${ry}deg) rotateX(${rx}deg) scale(${scale})`,
         opacity,
-        background: isAnalysis
-          ? 'var(--surface-2)'
-          : isJob
-          ? 'var(--surface-1)'
-          : 'var(--surface-1)',
-        border: `1px solid ${isAnalysis ? 'rgba(45,232,176,0.25)' : 'var(--border-strong)'}`,
+        background: isAccent ? 'var(--surface-2)' : 'var(--surface-1)',
+        border: `1px solid ${isAccent ? 'rgba(45,232,176,0.22)' : 'var(--border-strong)'}`,
         borderRadius: 'var(--radius-xl)',
-        boxShadow: isAnalysis
-          ? '0 0 40px rgba(45,232,176,0.06), 0 24px 48px rgba(0,0,0,0.5)'
-          : '0 16px 40px rgba(0,0,0,0.4)',
-        padding: '20px',
+        padding: '18px 20px',
         overflow: 'hidden',
-        animation: `fade-up var(--dur-slow) var(--ease-out) ${delay}ms both`,
+        // Entry animation
+        animation: isAccent
+          ? `fade-up var(--dur-slow) var(--ease-out) ${delay}ms both, accent-pulse 3.5s ease-in-out ${delay + 800}ms infinite`
+          : `fade-up var(--dur-slow) var(--ease-out) ${delay}ms both`,
+        // Non-accent: subtle drop shadow; accent: glow handled by accent-pulse keyframe
+        boxShadow: isAccent
+          ? undefined // controlled by accent-pulse keyframe
+          : '0 16px 40px rgba(0,0,0,0.4)',
         display: 'flex',
         flexDirection: 'column',
-        gap: '10px',
+        gap: '8px',
       }}
     >
-      {content === 'resume' && <ResumeContent />}
-      {content === 'analysis' && <AnalysisContent />}
-      {content === 'job' && <JobContent />}
+      {children}
     </div>
   )
 }
 
-function ResumeContent() {
+// ── Layer content components ───────────────────────────────────────
+
+function ResumeLayerContent() {
   return (
     <>
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
-        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--text-muted)' }} />
-        <LineBlock width="55%" color="var(--text-muted)" height={9} />
+      <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '2px' }}>
+        <Block w="6px" h={6} color="var(--text-muted)" style={{ borderRadius: '50%' }} />
+        <Block w="48%" h={8} color="var(--text-muted)" style={{ opacity: 0.5 }} />
       </div>
-      {[80, 60, 70, 50, 65, 55, 72].map((w, i) => (
-        <LineBlock key={i} width={`${w}%`} color="var(--surface-3)" height={7} />
+      {[78, 58, 68, 48, 62, 54, 70].map((w, i) => (
+        <Block key={i} w={`${w}%`} h={6} color="var(--surface-3)" />
       ))}
     </>
   )
 }
 
-function AnalysisContent() {
+function AnalysisLayerContent({ scoreRef }: { scoreRef: React.RefObject<HTMLSpanElement | null> }) {
+  const MATCHED_BADGES = ['React', 'TypeScript', 'Next.js']
+  const MISSING_BADGES = ['GraphQL', 'AWS']
+
   return (
     <>
-      {/* Score badge */}
+      {/* Score row */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
-          <span style={{ fontSize: '28px', fontWeight: '700', color: 'var(--accent)', lineHeight: 1, letterSpacing: '-0.04em' }}>
-            78
+          <span
+            ref={scoreRef}
+            style={{
+              fontSize: '30px',
+              fontWeight: '700',
+              color: 'var(--accent)',
+              lineHeight: 1,
+              letterSpacing: '-0.04em',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            0
           </span>
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>/100</span>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>/100</span>
         </div>
-        <span style={{
-          fontSize: '10px', fontWeight: '600', padding: '2px 8px',
-          background: 'var(--success-muted)', color: 'var(--success)',
-          borderRadius: 'var(--radius-sm)',
-        }}>
+        <span
+          style={{
+            fontSize: '10px',
+            fontWeight: '600',
+            padding: '2px 8px',
+            background: 'var(--success-muted)',
+            color: 'var(--success)',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid rgba(34,197,94,0.2)',
+          }}
+        >
           ATS: Good
         </span>
       </div>
-      <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-        {['React', 'TypeScript', 'Next.js'].map(k => (
-          <span key={k} style={{
-            fontSize: '10px', padding: '2px 7px',
-            background: 'var(--success-muted)', color: 'var(--success)',
-            borderRadius: 'var(--radius-sm)',
-          }}>{k}</span>
+
+      {/* Matched keyword badges */}
+      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+        {MATCHED_BADGES.map((k, i) => (
+          <span
+            key={k}
+            style={{
+              fontSize: '10px',
+              padding: '2px 7px',
+              background: 'var(--success-muted)',
+              color: 'var(--success)',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid rgba(34,197,94,0.15)',
+              animation: `badge-pop 350ms var(--ease-out) ${900 + i * 110}ms both`,
+            }}
+          >
+            {k}
+          </span>
         ))}
-        {['GraphQL', 'AWS'].map(k => (
-          <span key={k} style={{
-            fontSize: '10px', padding: '2px 7px',
-            background: 'var(--warning-muted)', color: 'var(--warning)',
-            borderRadius: 'var(--radius-sm)',
-          }}>{k}</span>
+        {MISSING_BADGES.map((k, i) => (
+          <span
+            key={k}
+            style={{
+              fontSize: '10px',
+              padding: '2px 7px',
+              background: 'var(--warning-muted)',
+              color: 'var(--warning)',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid rgba(245,158,11,0.15)',
+              animation: `badge-pop 350ms var(--ease-out) ${900 + (MATCHED_BADGES.length + i) * 110}ms both`,
+            }}
+          >
+            {k}
+          </span>
         ))}
       </div>
-      {[70, 50, 80].map((w, i) => (
-        <LineBlock key={i} width={`${w}%`} color="var(--surface-3)" height={7} />
+
+      {/* Decorative lines */}
+      {[68, 50, 78].map((w, i) => (
+        <Block key={i} w={`${w}%`} h={6} color="var(--surface-3)" />
       ))}
     </>
   )
 }
 
-function JobContent() {
+function JobLayerContent() {
   return (
     <>
       <div style={{ marginBottom: '4px' }}>
-        <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+        <p style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-secondary)', margin: '0 0 6px' }}>
           Senior Frontend Engineer
-        </div>
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: '5px',
-          fontSize: '10px', fontWeight: '600',
-          padding: '3px 9px',
-          background: 'rgba(139,92,246,0.12)',
-          color: '#C4B5FD',
-          borderRadius: 'var(--radius-sm)',
-        }}>
+        </p>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '5px',
+            fontSize: '10px',
+            fontWeight: '600',
+            padding: '3px 9px',
+            background: 'rgba(139,92,246,0.10)',
+            color: '#C4B5FD',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid rgba(139,92,246,0.18)',
+          }}
+        >
           64% aligned
-        </div>
+        </span>
       </div>
-      {[65, 80, 55, 72].map((w, i) => (
-        <LineBlock key={i} width={`${w}%`} color="var(--surface-3)" height={7} />
+      {[62, 78, 52, 70].map((w, i) => (
+        <Block key={i} w={`${w}%`} h={6} color="var(--surface-3)" />
       ))}
     </>
   )
 }
 
-function LineBlock({ width, color, height = 8 }: { width: string; color: string; height?: number }) {
+// ── Primitive ──────────────────────────────────────────────────────
+
+function Block({
+  w, h, color, style,
+}: {
+  w: string | number
+  h: number
+  color: string
+  style?: React.CSSProperties
+}) {
   return (
-    <div style={{ width, height, borderRadius: '3px', background: color }} />
+    <div
+      style={{
+        width: w,
+        height: h,
+        borderRadius: '3px',
+        background: color,
+        flexShrink: 0,
+        ...style,
+      }}
+    />
   )
 }

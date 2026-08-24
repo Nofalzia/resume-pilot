@@ -16,22 +16,23 @@ export function Hero() {
         overflow: 'hidden',
       }}
     >
-      {/* Subtle radial glow — accent, very restrained */}
+      {/* Restrained radial accent glow — background only */}
       <div
         aria-hidden="true"
         style={{
           position: 'absolute',
-          top: '20%',
+          top: '15%',
           left: '50%',
           transform: 'translateX(-50%)',
-          width: '600px',
-          height: '600px',
-          background: 'radial-gradient(ellipse at center, rgba(45,232,176,0.045) 0%, transparent 70%)',
+          width: '700px',
+          height: '700px',
+          background: 'radial-gradient(ellipse at center, rgba(45,232,176,0.04) 0%, transparent 68%)',
           pointerEvents: 'none',
         }}
       />
 
       <div
+        className="hero-grid"
         style={{
           maxWidth: '1080px',
           margin: '0 auto',
@@ -41,19 +42,13 @@ export function Hero() {
           gap: '48px',
           alignItems: 'center',
         }}
-        className="hero-grid"
       >
-        {/* Text column */}
+        {/* ── Text column ──────────────────────────────────────── */}
         <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '24px',
-            maxWidth: '560px',
-          }}
           className="animate-fade-up"
+          style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '560px' }}
         >
-          {/* Eyebrow */}
+          {/* Eyebrow pill */}
           <div
             style={{
               display: 'inline-flex',
@@ -68,21 +63,12 @@ export function Hero() {
           >
             <span
               aria-hidden="true"
-              style={{
-                width: '6px',
-                height: '6px',
-                borderRadius: '50%',
-                background: 'var(--accent)',
-                flexShrink: 0,
-              }}
+              style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)', flexShrink: 0 }}
             />
             <span
               style={{
-                fontSize: '12px',
-                fontWeight: '600',
-                color: 'var(--accent)',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
+                fontSize: '12px', fontWeight: '600', color: 'var(--accent)',
+                letterSpacing: '0.04em', textTransform: 'uppercase',
               }}
             >
               AI-powered resume analysis
@@ -102,7 +88,7 @@ export function Hero() {
             }}
           >
             Know exactly{' '}
-            <span style={{ color: 'var(--accent)' }}>what's weak.</span>
+            <span style={{ color: 'var(--accent)' }}>what&rsquo;s weak.</span>
             <br />
             Fix it fast.
           </h1>
@@ -127,16 +113,11 @@ export function Hero() {
             <Link
               href="/workspace"
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
+                display: 'inline-flex', alignItems: 'center', gap: '8px',
                 padding: '13px 24px',
-                background: 'var(--accent)',
-                color: '#080809',
+                background: 'var(--accent)', color: '#080809',
                 borderRadius: 'var(--radius-lg)',
-                fontSize: '15px',
-                fontWeight: '700',
-                textDecoration: 'none',
+                fontSize: '15px', fontWeight: '700', textDecoration: 'none',
                 letterSpacing: '-0.02em',
                 transition: 'background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out)',
                 whiteSpace: 'nowrap',
@@ -159,17 +140,12 @@ export function Hero() {
             <a
               href="#how-it-works"
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
+                display: 'inline-flex', alignItems: 'center', gap: '6px',
                 padding: '13px 20px',
-                background: 'transparent',
-                color: 'var(--text-secondary)',
+                background: 'transparent', color: 'var(--text-secondary)',
                 border: '1px solid var(--border-strong)',
                 borderRadius: 'var(--radius-lg)',
-                fontSize: '14px',
-                fontWeight: '500',
-                textDecoration: 'none',
+                fontSize: '14px', fontWeight: '500', textDecoration: 'none',
                 transition: 'color var(--dur-fast), border-color var(--dur-fast)',
                 whiteSpace: 'nowrap',
               }}
@@ -189,29 +165,9 @@ export function Hero() {
           </div>
 
           {/* Trust signals */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '20px',
-              flexWrap: 'wrap',
-              paddingTop: '8px',
-            }}
-          >
-            {[
-              '5 analysis dimensions',
-              'ATS compatibility check',
-              'Context-aware AI Copilot',
-            ].map((signal) => (
-              <div
-                key={signal}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '13px',
-                  color: 'var(--text-muted)',
-                }}
-              >
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', paddingTop: '8px' }}>
+            {['5 analysis dimensions', 'ATS compatibility check', 'Context-aware AI Copilot'].map((signal) => (
+              <div key={signal} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--text-muted)' }}>
                 <CheckIcon />
                 {signal}
               </div>
@@ -219,16 +175,13 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Visual column */}
-        <div
-          style={{ width: '100%' }}
-          className="hero-visual animate-fade-up"
-        >
-          {/* Accessible description of the visual for screen readers */}
+        {/* ── Visual column ─────────────────────────────────────── */}
+        <div className="hero-visual">
           <p className="sr-only">
             A visual representation of the Resume Pilot analysis workflow: three
             layered panels showing a raw resume, AI analysis results with a score
-            of 78 out of 100, and a job alignment card showing 64% match.
+            of 78 out of 100 and keyword matching, and a job alignment card showing
+            64% match to a Senior Frontend Engineer role.
           </p>
           <HeroCSSScene />
         </div>
@@ -239,8 +192,15 @@ export function Hero() {
           .hero-grid {
             grid-template-columns: 1fr 1fr !important;
           }
+          /* Visual column entry animation — delayed relative to text column */
           .hero-visual {
-            animation-delay: 150ms;
+            animation: fade-up 500ms var(--ease-out) 160ms both;
+          }
+        }
+        @media (max-width: 899px) {
+          .hero-visual {
+            /* On mobile, scene is centred with a short delay */
+            animation: fade-in 500ms var(--ease-out) 120ms both;
           }
         }
       `}</style>

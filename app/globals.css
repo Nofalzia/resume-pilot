@@ -2,7 +2,7 @@
 
 /* ─── Design tokens ─────────────────────────────────────────────── */
 :root {
-  /* Surfaces — dark-first, always */
+  /* Surfaces */
   --surface-base: #080809;
   --surface-1:    #111115;
   --surface-2:    #18181e;
@@ -13,24 +13,24 @@
   --border-strong: rgba(255, 255, 255, 0.12);
   --border-focus:  rgba(45, 232, 176, 0.45);
 
-  /* Accent — restrained, single source of truth */
+  /* Accent */
   --accent:        #2DE8B0;
   --accent-muted:  rgba(45, 232, 176, 0.10);
   --accent-hover:  #24c998;
 
   /* Text */
-  --text-primary:   #F5F5F7;
-  --text-secondary: #8A8A9A;
-  --text-muted:     #55556A;
+  --text-primary:     #F5F5F7;
+  --text-secondary:   #8A8A9A;
+  --text-muted:       #55556A;
   --text-placeholder: #44445a;
 
-  /* Semantic — analysis result cards only */
-  --success:        #22C55E;
-  --success-muted:  rgba(34, 197, 94, 0.10);
-  --warning:        #F59E0B;
-  --warning-muted:  rgba(245, 158, 11, 0.10);
-  --danger:         #EF4444;
-  --danger-muted:   rgba(239, 68, 68, 0.08);
+  /* Semantic */
+  --success:       #22C55E;
+  --success-muted: rgba(34, 197, 94, 0.10);
+  --warning:       #F59E0B;
+  --warning-muted: rgba(245, 158, 11, 0.10);
+  --danger:        #EF4444;
+  --danger-muted:  rgba(239, 68, 68, 0.08);
 
   /* Motion */
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
@@ -54,6 +54,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   tab-size: 4;
+  /* Smooth anchor scrolling — overridden for reduced-motion below */
+  scroll-behavior: smooth;
 }
 
 body {
@@ -67,19 +69,43 @@ body {
   margin: 0;
 }
 
-/* ─── Focus states — visible, accessible ────────────────────────── */
+/* ─── Focus — visible, consistent, accent-coloured ──────────────── */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
 
-/* ─── Reduced motion ─────────────────────────────────────────────── */
+/* Buttons and links that use box-shadow focus need this reset */
+button:focus-visible,
+a:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ─── Reduced motion — hardened block ───────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    animation-delay: 0ms !important;
+  }
+
+  /* Ensure elements with animation-fill-mode: both are visible */
+  .animate-fade-up,
+  .animate-fade-in {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
@@ -96,13 +122,10 @@ body {
   border-width: 0;
 }
 
-/* ─── Scrollbar — dark theme ─────────────────────────────────────── */
+/* ─── Scrollbar ──────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border-radius: 3px;
-}
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
 
 /* ─── Selection ──────────────────────────────────────────────────── */
@@ -111,7 +134,9 @@ body {
   color: var(--text-primary);
 }
 
-/* ─── Entry animations (respects reduced-motion above) ──────────── */
+/* ─── Keyframes ──────────────────────────────────────────────────── */
+
+/* Used by workspace result cards and hero text */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -122,11 +147,48 @@ body {
   to   { opacity: 1; }
 }
 
+/* Loading states */
 @keyframes pulse-dot {
-  0%, 100% { opacity: 0.4; }
-  50%       { opacity: 1; }
+  0%, 100% { opacity: 0.4; transform: scale(0.85); }
+  50%       { opacity: 1;   transform: scale(1); }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Hero scene — slow accent glow pulse on analysis card */
+@keyframes accent-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(45, 232, 176, 0.04),
+      0 24px 48px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 55px rgba(45, 232, 176, 0.13),
+      0 24px 48px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Hero scene — badge pop-in */
+@keyframes badge-pop {
+  from { opacity: 0; transform: scale(0.8) translateY(4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Hero scene — subtle float for the scene container */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
+}
+
+/* ─── Utility animation classes ──────────────────────────────────── */
 .animate-fade-up {
   animation: fade-up var(--dur-slow) var(--ease-out) both;
 }
