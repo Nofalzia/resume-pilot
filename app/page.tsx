@@ -1,17 +1,27 @@
-import ResumeCopilot from "@/components/ai/ResumeCopilot";
-export default function Home() {
-  return (
-    <main className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-6xl font-bold">
-          ResumePilot
-        </h1>
+import { LandingNav } from '@/components/landing/LandingNav'
+import { Hero } from '@/components/landing/Hero'
+import { HowItWorks } from '@/components/landing/HowItWorks'
+import { FeatureGrid } from '@/components/landing/FeatureGrid'
+import { CTABand, LandingFooter } from '@/components/landing/Footer'
 
-        <p className="mt-5 text-xl text-gray-500">
-          AI Resume Builder
-        </p>
-      </div>
-      <ResumeCopilot />
-    </main>
-  );
+/**
+ * Landing page — server component, SSR, fully SEO-optimised.
+ * No 'use client' at this level — client interactivity is scoped
+ * to HeroCSSScene (pointer tilt) and LandingNav (hover events).
+ */
+export default function LandingPage() {
+  return (
+    <>
+      <LandingNav />
+
+      <main id="main-content">
+        <Hero />
+        <HowItWorks />
+        <FeatureGrid />
+        <CTABand />
+      </main>
+
+      <LandingFooter />
+    </>
+  )
 }

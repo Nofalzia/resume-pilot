@@ -1,49 +1,46 @@
-import "./globals.css";
-import Link from "next/link";
+import type { Metadata } from 'next'
+import './globals.css'
 
-export const metadata = {
-  title: "ResumePilot",
-  description: "AI Resume Builder",
-};
+export const metadata: Metadata = {
+  metadataBase: new URL('https://ai-resume-pilot-nz.vercel.app'),
+  title: {
+    default: 'Resume Pilot — AI-powered resume analysis',
+    template: '%s — Resume Pilot',
+  },
+  description:
+    'Analyze your resume against any job description. Get AI-powered feedback on ATS compatibility, missing keywords, experience bullet impact, and exactly what to fix first.',
+  keywords: [
+    'resume analysis',
+    'AI resume feedback',
+    'ATS checker',
+    'resume optimization',
+    'keyword gap analysis',
+    'resume score',
+  ],
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://ai-resume-pilot-nz.vercel.app',
+    siteName: 'Resume Pilot',
+    title: 'Resume Pilot — AI-powered resume analysis',
+    description:
+      'Paste your resume. Add a target job. Get structured AI feedback on keywords, ATS compatibility, and exactly what to improve.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Resume Pilot' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Resume Pilot — AI-powered resume analysis',
+    description:
+      'Paste your resume. Add a target job. Get structured AI feedback on keywords, ATS compatibility, and exactly what to improve.',
+    images: ['/og-image.png'],
+  },
+  robots: { index: true, follow: true },
+}
 
-const links = [
-  ["Dashboard", "/dashboard"],
-  ["Resumes", "/resumes"],
-  ["Templates", "/templates"],
-  ["ATS", "/ats-checker"],
-  ["Cover Letter", "/cover-letter"],
-  ["AI Assistant", "/ai-assistant"],
-  ["Profile", "/profile"],
-  ["Settings", "/settings"],
-  ["Health", "/health"],
-];
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex">
-        <aside className="w-64 border-r p-6 hidden md:block">
-          <h2 className="font-bold text-xl mb-6">
-            ResumePilot
-          </h2>
-
-          <nav className="space-y-3">
-            {links.map(([name, href]) => (
-              <div key={href}>
-                <Link href={href}>{name}</Link>
-              </div>
-            ))}
-          </nav>
-        </aside>
-
-        <main className="flex-1 p-6">
-          {children}
-        </main>
-      </body>
+      <body>{children}</body>
     </html>
-  );
+  )
 }
