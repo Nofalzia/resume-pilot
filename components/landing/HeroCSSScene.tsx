@@ -23,7 +23,7 @@ export function HeroCSSScene() {
   const current     = useRef({ x: 0, y: 0 })
 
   // ── Pointer-reactive tilt ─────────────────────────────────────────
-  const onMouseMove = useCallback((e: MouseEvent) => {
+  const onPointerMove = useCallback((e: PointerEvent) => {
     const el = sceneRef.current
     if (!el) return
     const rect = el.getBoundingClientRect()
@@ -33,7 +33,7 @@ export function HeroCSSScene() {
     }
   }, [])
 
-  const onMouseLeave = useCallback(() => {
+  const onPointerLeave = useCallback(() => {
     target.current = { x: 0, y: 0 }
   }, [])
 
@@ -44,13 +44,13 @@ export function HeroCSSScene() {
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (prefersReduced) return // static composition on reduced-motion
 
-    const isTouchDevice = window.matchMedia('(hover: none)').matches
-    if (isTouchDevice) return // no pointer tilt on touch
+    const supportsHoveringPointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    if (!supportsHoveringPointer) return
 
-    el.addEventListener('mousemove', onMouseMove)
-    el.addEventListener('mouseleave', onMouseLeave)
+    el.addEventListener('pointermove', onPointerMove)
+    el.addEventListener('pointerleave', onPointerLeave)
 
-    const MAX_TILT = 9 // degrees
+    const MAX_TILT = 5 // degrees
 
     function tickTilt() {
       current.current.x += (target.current.x - current.current.x) * 0.055
@@ -67,11 +67,12 @@ export function HeroCSSScene() {
     rafTiltRef.current = requestAnimationFrame(tickTilt)
 
     return () => {
-      el.removeEventListener('mousemove', onMouseMove)
-      el.removeEventListener('mouseleave', onMouseLeave)
+      el.removeEventListener('pointermove', onPointerMove)
+      el.removeEventListener('pointerleave', onPointerLeave)
       cancelAnimationFrame(rafTiltRef.current)
+      el.style.transform = ''
     }
-  }, [onMouseMove, onMouseLeave])
+  }, [onPointerMove, onPointerLeave])
 
   // ── Score counter 0 → 78 ─────────────────────────────────────────
   useEffect(() => {
@@ -119,27 +120,34 @@ export function HeroCSSScene() {
       style={{ perspective: '900px', perspectiveOrigin: '50% 45%', width: '100%', maxWidth: '420px', margin: '0 auto', userSelect: 'none' }}
     >
       <div
-        ref={sceneRef}
+        className="hero-scene"
         style={{
           position: 'relative',
           width: '100%',
           aspectRatio: '4 / 3',
-          transformStyle: 'preserve-3d',
-          // Gentle idle float on desktop, skipped by reduced-motion rule in globals.css
-          animation: 'float 5s ease-in-out infinite',
         }}
       >
-        <Layer z={-44} ry={-4} rx={2} opacity={0.42} scale={0.91} delay={0}>
-          <ResumeLayerContent />
-        </Layer>
+        <div
+          ref={sceneRef}
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+          transformStyle: 'preserve-3d',
+          }}
+        >
+          <Layer z={-44} ry={-4} rx={2} opacity={0.42} scale={0.91} delay={0}>
+            <ResumeLayerContent />
+          </Layer>
 
-        <Layer z={0} ry={0} rx={0} opacity={1} scale={1} delay={100} isAccent>
-          <AnalysisLayerContent scoreRef={scoreRef} />
-        </Layer>
+          <Layer z={0} ry={0} rx={0} opacity={1} scale={1} delay={100} isAccent>
+            <AnalysisLayerContent scoreRef={scoreRef} />
+          </Layer>
 
-        <Layer z={46} ry={3} rx={-1} opacity={0.95} scale={0.93} delay={200}>
-          <JobLayerContent />
-        </Layer>
+          <Layer z={46} ry={3} rx={-1} opacity={0.95} scale={0.93} delay={200}>
+            <JobLayerContent />
+          </Layer>
+        </div>
       </div>
     </div>
   )
@@ -171,19 +179,31 @@ function Layer({ z, ry, rx, opacity, scale, delay, isAccent, children }: LayerPr
         borderRadius: 'var(--radius-xl)',
         padding: '18px 20px',
         overflow: 'hidden',
-        // Entry animation
-        animation: isAccent
-          ? `fade-up var(--dur-slow) var(--ease-out) ${delay}ms both, accent-pulse 3.5s ease-in-out ${delay + 800}ms infinite`
-          : `fade-up var(--dur-slow) var(--ease-out) ${delay}ms both`,
-        // Non-accent: subtle drop shadow; accent: glow handled by accent-pulse keyframe
+        // Glow is rendered by a composited overlay below.
+        animation: `fade-up var(--dur-slow) var(--ease-out) ${delay}ms both`,
         boxShadow: isAccent
-          ? undefined // controlled by accent-pulse keyframe
+          ? undefined
           : '0 16px 40px rgba(0,0,0,0.4)',
         display: 'flex',
         flexDirection: 'column',
         gap: '8px',
       }}
     >
+      {isAccent && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: '-1px',
+            borderRadius: 'var(--radius-xl)',
+            boxShadow: '0 0 50px rgba(45,232,176,0.28), 0 0 90px rgba(45,232,176,0.10)',
+            opacity: 0,
+            animation: `accent-glow-opacity 3.5s ease-in-out ${delay + 800}ms infinite`,
+            pointerEvents: 'none',
+            zIndex: -1,
+          }}
+        />
+      )}
       {children}
     </div>
   )
@@ -206,6 +226,9 @@ function ResumeLayerContent() {
 }
 
 function AnalysisLayerContent({ scoreRef }: { scoreRef: React.RefObject<HTMLSpanElement | null> }) {
+  const prefersReduced =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const MATCHED_BADGES = ['React', 'TypeScript', 'Next.js']
   const MISSING_BADGES = ['GraphQL', 'AWS']
 
@@ -225,7 +248,7 @@ function AnalysisLayerContent({ scoreRef }: { scoreRef: React.RefObject<HTMLSpan
               fontVariantNumeric: 'tabular-nums',
             }}
           >
-            0
+            {prefersReduced ? '78' : '0'}
           </span>
           <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '2px' }}>/100</span>
         </div>
@@ -256,7 +279,7 @@ function AnalysisLayerContent({ scoreRef }: { scoreRef: React.RefObject<HTMLSpan
               color: 'var(--success)',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid rgba(34,197,94,0.15)',
-              animation: `badge-pop 350ms var(--ease-out) ${900 + i * 110}ms both`,
+              animation: prefersReduced ? undefined : `badge-pop 350ms var(--ease-out) ${900 + i * 110}ms both`,
             }}
           >
             {k}
@@ -272,7 +295,7 @@ function AnalysisLayerContent({ scoreRef }: { scoreRef: React.RefObject<HTMLSpan
               color: 'var(--warning)',
               borderRadius: 'var(--radius-sm)',
               border: '1px solid rgba(245,158,11,0.15)',
-              animation: `badge-pop 350ms var(--ease-out) ${900 + (MATCHED_BADGES.length + i) * 110}ms both`,
+              animation: prefersReduced ? undefined : `badge-pop 350ms var(--ease-out) ${900 + (MATCHED_BADGES.length + i) * 110}ms both`,
             }}
           >
             {k}

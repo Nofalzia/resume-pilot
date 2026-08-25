@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  // Root layout template is '%s — Resume Pilot'
-  // So 'Workspace' becomes 'Workspace — Resume Pilot' — not double-suffixed
+  // The root template appends “— Resume Pilot”.
   title: 'Workspace',
   description: 'Analyze your resume with AI.',
   robots: { index: false, follow: false },

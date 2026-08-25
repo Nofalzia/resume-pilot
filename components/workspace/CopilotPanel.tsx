@@ -78,6 +78,19 @@ export function CopilotPanel({
     }
   }, [isOpen])
 
+  // Keep an off-screen panel out of both the accessibility tree and tab order.
+  useEffect(() => {
+    const el = panelRef.current
+    if (!el) return
+    if (isOpen) {
+      el.removeAttribute('aria-hidden')
+      el.removeAttribute('inert')
+    } else {
+      el.setAttribute('aria-hidden', 'true')
+      el.setAttribute('inert', '')
+    }
+  }, [isOpen])
+
   // Ã¢â€â‚¬Ã¢â€â‚¬ Escape key closes panel Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
