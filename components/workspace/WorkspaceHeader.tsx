@@ -62,7 +62,7 @@ export function WorkspaceHeader({
         </Link>
 
         {/* Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="workspace-header-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {showCopilotTrigger && onOpenCopilot && (
             <Button
               variant="secondary"

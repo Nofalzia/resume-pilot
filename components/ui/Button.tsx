@@ -36,8 +36,8 @@ const variantStyles: Record<Variant, React.CSSProperties> = {
 }
 
 const sizeStyles: Record<Size, React.CSSProperties> = {
-  sm: { fontSize: '13px', padding: '6px 12px', borderRadius: 'var(--radius-md)' },
-  md: { fontSize: '14px', padding: '9px 18px', borderRadius: 'var(--radius-md)' },
+  sm: { fontSize: '13px', minHeight: '44px', padding: '6px 12px', borderRadius: 'var(--radius-md)' },
+  md: { fontSize: '14px', minHeight: '44px', padding: '9px 18px', borderRadius: 'var(--radius-md)' },
   lg: { fontSize: '15px', padding: '12px 24px', borderRadius: 'var(--radius-lg)' },
 }
 

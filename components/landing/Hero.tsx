@@ -7,6 +7,7 @@ export function Hero() {
   return (
     <section
       aria-labelledby="hero-heading"
+      className="hero-section"
       style={{
         minHeight: '100dvh',
         display: 'flex',

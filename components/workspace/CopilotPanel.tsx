@@ -38,6 +38,7 @@ export function CopilotPanel({
   const panelRef = useRef<HTMLDivElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const openerRef = useRef<HTMLElement | null>(null)
 
   const [input, setInput] = useState('')
   const transport = useMemo(
@@ -72,9 +73,13 @@ export function CopilotPanel({
   // Ã¢â€â‚¬Ã¢â€â‚¬ Focus management Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   useEffect(() => {
     if (isOpen) {
+      openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
       // Small delay so the CSS transition has started before focus moves
       const t = setTimeout(() => closeButtonRef.current?.focus(), 50)
       return () => clearTimeout(t)
+    } else if (openerRef.current?.isConnected) {
+      openerRef.current.focus()
+      openerRef.current = null
     }
   }, [isOpen])
 
@@ -243,8 +248,8 @@ export function CopilotPanel({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '32px',
-              height: '32px',
+              width: '44px',
+              height: '44px',
               background: 'none',
               border: '1px solid var(--border)',
               borderRadius: 'var(--radius-md)',
@@ -314,7 +319,8 @@ export function CopilotPanel({
                   cursor: 'pointer',
                   fontFamily: 'inherit',
                   flexShrink: 0,
-                  padding: '2px 0',
+                minHeight: '44px',
+                padding: '2px 8px',
                 }}
               >
                 Retry

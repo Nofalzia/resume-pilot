@@ -70,6 +70,20 @@ body {
   margin: 0;
 }
 
+button,
+a[href] {
+  min-height: 44px;
+}
+
+a[href] {
+  display: inline-flex;
+  align-items: center;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 /* ─── Focus — visible, consistent, accent-coloured ──────────────── */
 :focus-visible {
   outline: 2px solid var(--accent);
@@ -121,6 +135,45 @@ textarea:focus-visible,
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border-width: 0;
+}
+
+@media (max-width: 430px) {
+  /* Prevent iOS from zooming text inputs and preserve comfortable gutters. */
+  textarea,
+  input,
+  select {
+    font-size: 16px !important;
+  }
+
+  .landing-shell {
+    padding-inline: 1rem !important;
+  }
+
+  .hero-section {
+    min-height: auto !important;
+    padding: 88px 1rem 48px !important;
+  }
+
+  .hero-grid {
+    gap: 32px !important;
+  }
+
+  .hero-visual {
+    width: min(100%, 360px);
+    margin-inline: auto;
+  }
+
+  .workspace-main {
+    padding: 1.5rem 1rem 3rem !important;
+  }
+
+  .workspace-header-actions {
+    gap: 4px !important;
+  }
+
+  .workspace-header-actions button {
+    padding-inline: 10px !important;
+  }
 }
 
 /* ─── Scrollbar ──────────────────────────────────────────────────── */

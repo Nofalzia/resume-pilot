@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useSessionStorage } from '@/lib/hooks/useSessionStorage'
 import type { Analysis, WorkspacePhase } from '@/lib/types'
+import { AnalysisSchema } from '@/lib/ai/schema'
 
 import { WorkspaceHeader } from '@/components/workspace/WorkspaceHeader'
 import { ResumeInput } from '@/components/workspace/ResumeInput'
@@ -28,18 +29,20 @@ export default function WorkspacePage() {
   const [jobText, setJobText, clearJob]               = useSessionStorage<string>(SK_JOB, '')
   const [analysis, setAnalysis, clearAnalysis]        = useSessionStorage<Analysis | null>(SK_ANALYSIS, null)
 
-  const [phase, setPhase] = useState<WorkspacePhase>(() =>
-    typeof window !== 'undefined' &&
-    window.sessionStorage.getItem(SK_ANALYSIS) !== null
-      ? 'results'
-      : 'input'
-  )
+  const [phase, setPhase] = useState<WorkspacePhase>('input')
   const [errorMessage, setErrorMessage] = useState('')
   const [errorCode, setErrorCode]       = useState<string | undefined>()
   const [copilotOpen, setCopilotOpen]   = useState(false)
 
   const resultsRef = useRef<HTMLDivElement>(null)
   const formRef    = useRef<HTMLFormElement>(null)
+  const errorRef   = useRef<HTMLDivElement>(null)
+  const validAnalysis = analysis && AnalysisSchema.safeParse(analysis).success ? analysis : null
+
+  useEffect(() => {
+    if (analysis && !validAnalysis) clearAnalysis()
+    if (validAnalysis) setPhase('results')
+  }, [analysis, clearAnalysis, validAnalysis])
 
   // Screen reader status
   const srMessage =
@@ -52,6 +55,10 @@ export default function WorkspacePage() {
     if (phase === 'results' && resultsRef.current) {
       resultsRef.current.focus()
     }
+  }, [phase])
+
+  useEffect(() => {
+    if (phase === 'error') errorRef.current?.focus()
   }, [phase])
 
   // Prevent scroll when copilot panel is open
@@ -68,26 +75,39 @@ export default function WorkspacePage() {
     setErrorCode(undefined)
 
     try {
+      const controller = new AbortController()
+      const timeout = window.setTimeout(() => controller.abort(), 45_000)
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           resume: resumeText.trim(),
           ...(jobText.trim() ? { jobDescription: jobText.trim() } : {}),
         }),
-      })
+      }).finally(() => window.clearTimeout(timeout))
 
-      const data = await res.json()
+      const data: unknown = await res.json().catch(() => ({}))
 
       if (!res.ok) {
-        throw { message: data.message ?? `Request failed (${res.status})`, code: data.code }
+        const apiError = data as { message?: string; code?: string }
+        throw { message: apiError.message ?? `Request failed (${res.status})`, code: apiError.code }
       }
 
-      setAnalysis(data as Analysis)
+      const parsedAnalysis = AnalysisSchema.safeParse(data)
+      if (!parsedAnalysis.success) {
+        throw { message: 'The analysis response was incomplete. Please try again.' }
+      }
+
+      setAnalysis(parsedAnalysis.data)
       setPhase('results')
     } catch (err: unknown) {
-      const e = err as { message?: string; code?: string }
-      setErrorMessage(e.message ?? 'Something went wrong. Please try again.')
+      const e = err as { message?: string; code?: string; name?: string }
+      setErrorMessage(
+        e.name === 'AbortError'
+          ? 'The analysis is taking longer than expected. Please try again.'
+          : e.message ?? 'Something went wrong. Please try again.'
+      )
       setErrorCode(e.code)
       setPhase('error')
     }
@@ -130,6 +150,7 @@ export default function WorkspacePage() {
 
       <main
         id="main-content"
+        className="workspace-main"
         style={{ maxWidth: '768px', margin: '0 auto', padding: '2rem 1rem 4rem' }}
       >
         {/* ── INPUT ──────────────────────────────────────────────── */}
@@ -166,7 +187,7 @@ export default function WorkspacePage() {
 
         {/* ── ERROR ──────────────────────────────────────────────── */}
         {phase === 'error' && (
-          <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div ref={errorRef} tabIndex={-1} className="animate-fade-in" style={{ outline: 'none', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ opacity: 0.45, pointerEvents: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <ResumeInput value={resumeText} onChange={() => {}} disabled />
               {hasJobDescription && <JobInput value={jobText} onChange={() => {}} disabled />}
@@ -176,7 +197,7 @@ export default function WorkspacePage() {
         )}
 
         {/* ── RESULTS ────────────────────────────────────────────── */}
-        {phase === 'results' && analysis && (
+        {phase === 'results' && validAnalysis && (
           <div
             ref={resultsRef}
             tabIndex={-1}
@@ -185,23 +206,23 @@ export default function WorkspacePage() {
           >
             <AnalyzedContext hasJobDescription={hasJobDescription} charCount={resumeText.trim().length} />
 
-            <ScoreCard analysis={analysis} animationDelay={0} />
+            <ScoreCard analysis={validAnalysis} animationDelay={0} />
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
               <ATSCard
-                atsCompatibility={analysis.atsCompatibility}
-                atsIssues={analysis.atsIssues}
+                atsCompatibility={validAnalysis.atsCompatibility}
+                atsIssues={validAnalysis.atsIssues}
                 animationDelay={STAGGER_MS}
               />
               <KeywordsCard
-                keywords={analysis.keywords}
-                skills={analysis.skills}
+                keywords={validAnalysis.keywords}
+                skills={validAnalysis.skills}
                 animationDelay={STAGGER_MS * 2}
               />
             </div>
 
-            <BulletFeedback bullets={analysis.bulletFeedback} animationDelay={STAGGER_MS * 3} />
-            <RecommendationsCard recommendations={analysis.recommendations} animationDelay={STAGGER_MS * 4} />
+            <BulletFeedback bullets={validAnalysis.bulletFeedback} animationDelay={STAGGER_MS * 3} />
+            <RecommendationsCard recommendations={validAnalysis.recommendations} animationDelay={STAGGER_MS * 4} />
 
             {/* Copilot CTA — opens the panel */}
             <CopilotCTA onOpen={() => setCopilotOpen(true)} animationDelay={STAGGER_MS * 5} />
@@ -214,7 +235,7 @@ export default function WorkspacePage() {
         isOpen={copilotOpen}
         onClose={() => setCopilotOpen(false)}
         resumeText={resumeText}
-        analysis={analysis}
+        analysis={validAnalysis}
       />
     </div>
   )
@@ -262,6 +283,7 @@ function CopilotCTA({ onOpen, animationDelay }: { onOpen: () => void; animationD
         aria-label="Open AI Copilot panel"
         style={{
           padding: '9px 18px',
+          minHeight: '44px',
           background: 'var(--accent)',
           color: '#080809',
           border: 'none',

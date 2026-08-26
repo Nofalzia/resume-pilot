@@ -45,14 +45,15 @@ export function LandingNav() {
       >
         <div
           style={{
-            maxWidth: '1080px',
+          maxWidth: '1080px',
             margin: '0 auto',
             height: '58px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: '16px',
-          }}
+          gap: '16px',
+        }}
+        className="landing-shell"
         >
           {/* Logo */}
           <Link
