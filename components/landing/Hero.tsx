@@ -15,6 +15,7 @@ export function Hero() {
         padding: '96px 1.5rem 64px',
         position: 'relative',
         overflow: 'hidden',
+        borderBottom: '1px solid var(--border)',
       }}
     >
       {/* Restrained radial accent glow — background only */}

@@ -24,6 +24,8 @@ export function LoadingAnalysis({ hasJobDescription }: LoadingAnalysisProps) {
 
   return (
     <div
+      role="status"
+      aria-live="polite"
       aria-label="Analyzing resume, please wait"
       style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}
     >
@@ -39,7 +41,7 @@ export function LoadingAnalysis({ hasJobDescription }: LoadingAnalysisProps) {
               margin: 0,
             }}
           >
-            Analyzing your resume
+            Analyzing your resume…
           </p>
         </div>
 

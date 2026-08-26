@@ -3,6 +3,7 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { AI_MODEL } from '@/lib/ai/config'
 import { AnalysisSchema } from '@/lib/ai/schema'
 import { buildAnalysisPrompt } from '@/lib/ai/prompt'
+import type { DocumentType } from '@/lib/types'
 
 // Enforce server-side only — API key must never reach the client
 export const runtime = 'nodejs'
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
   // Parse and validate request body
   let resume: string
   let jobDescription: string | undefined
+  let documentType: DocumentType
 
   try {
     const body = await request.json()
@@ -30,6 +32,7 @@ export async function POST(request: Request) {
       typeof body.jobDescription === 'string' && body.jobDescription.trim()
         ? body.jobDescription.trim()
         : undefined
+    documentType = body.docType === 'cv' ? 'cv' : 'resume'
   } catch {
     return Response.json(
       { message: 'Invalid request body.' },
@@ -73,7 +76,7 @@ export async function POST(request: Request) {
       ),
       schema: AnalysisSchema,
       schemaName: 'resume_analysis',
-      prompt: buildAnalysisPrompt(resume, jobDescription),
+      prompt: buildAnalysisPrompt(resume, jobDescription, documentType),
       // The full schema is compact; avoid reserving Gemini's 65K-token default.
       maxOutputTokens: 3_000,
       // Slightly lower temperature for consistent, structured output

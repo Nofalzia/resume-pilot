@@ -4,6 +4,7 @@ import { type ChangeEvent, type FormEvent, useRef, useEffect } from 'react'
 
 interface CopilotInputProps {
   input: string
+  isOpen: boolean
   isLoading: boolean
   onInputChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
   onSubmit: (e: FormEvent<HTMLFormElement>) => void
@@ -12,6 +13,7 @@ interface CopilotInputProps {
 
 export function CopilotInput({
   input,
+  isOpen,
   isLoading,
   onInputChange,
   onSubmit,
@@ -29,10 +31,10 @@ export function CopilotInput({
 
   // Refocus textarea after generation stops
   useEffect(() => {
-    if (!isLoading) {
+    if (isOpen && !isLoading) {
       textareaRef.current?.focus()
     }
-  }, [isLoading])
+  }, [isOpen, isLoading])
 
   const canSubmit = input.trim().length > 0 && !isLoading
 

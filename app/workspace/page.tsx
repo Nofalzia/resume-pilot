@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useSessionStorage } from '@/lib/hooks/useSessionStorage'
-import type { Analysis, WorkspacePhase } from '@/lib/types'
+import type { Analysis, DocumentType, WorkspacePhase } from '@/lib/types'
 import { AnalysisSchema } from '@/lib/ai/schema'
 
 import { WorkspaceHeader } from '@/components/workspace/WorkspaceHeader'
@@ -22,16 +22,19 @@ import { RecommendationsCard } from '@/components/analysis/RecommendationsCard'
 const SK_RESUME   = 'rp:resume'
 const SK_JOB      = 'rp:job'
 const SK_ANALYSIS = 'rp:analysis'
+const SK_DOCUMENT_TYPE = 'rp:docType'
 const STAGGER_MS  = 80
 
 export default function WorkspacePage() {
   const [resumeText, setResumeText, clearResume]     = useSessionStorage<string>(SK_RESUME, '')
   const [jobText, setJobText, clearJob]               = useSessionStorage<string>(SK_JOB, '')
   const [analysis, setAnalysis, clearAnalysis]        = useSessionStorage<Analysis | null>(SK_ANALYSIS, null)
+  const [documentType, setDocumentType]               = useSessionStorage<DocumentType>(SK_DOCUMENT_TYPE, 'resume')
 
   const [phase, setPhase] = useState<WorkspacePhase>('input')
   const [errorMessage, setErrorMessage] = useState('')
   const [errorCode, setErrorCode]       = useState<string | undefined>()
+  const [resumeValidation, setResumeValidation] = useState('')
   const [copilotOpen, setCopilotOpen]   = useState(false)
 
   const resultsRef = useRef<HTMLDivElement>(null)
@@ -43,6 +46,14 @@ export default function WorkspacePage() {
     if (analysis && !validAnalysis) clearAnalysis()
     if (validAnalysis) setPhase('results')
   }, [analysis, clearAnalysis, validAnalysis])
+
+  useEffect(() => {
+    if (!resumeText.trim() && analysis) {
+      clearAnalysis()
+      setCopilotOpen(false)
+      setPhase('input')
+    }
+  }, [analysis, clearAnalysis, resumeText])
 
   // Screen reader status
   const srMessage =
@@ -68,7 +79,19 @@ export default function WorkspacePage() {
   }, [copilotOpen])
 
   const handleAnalyze = useCallback(async () => {
-    if (!resumeText.trim() || phase === 'analyzing') return
+    const normalizedResume = resumeText.trim()
+    const normalizedJob = jobText.trim()
+
+    if (!normalizedResume) {
+      setResumeValidation('Paste your resume to start the analysis. Spaces alone are not valid content.')
+      formRef.current?.querySelector('textarea')?.focus()
+      return
+    }
+    if (phase === 'analyzing') return
+
+    setResumeValidation('')
+    if (resumeText !== normalizedResume) setResumeText(normalizedResume)
+    if (jobText !== normalizedJob) setJobText(normalizedJob)
 
     setPhase('analyzing')
     setErrorMessage('')
@@ -82,8 +105,9 @@ export default function WorkspacePage() {
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
         body: JSON.stringify({
-          resume: resumeText.trim(),
-          ...(jobText.trim() ? { jobDescription: jobText.trim() } : {}),
+          resume: normalizedResume,
+          docType: documentType,
+          ...(normalizedJob ? { jobDescription: normalizedJob } : {}),
         }),
       }).finally(() => window.clearTimeout(timeout))
 
@@ -111,7 +135,30 @@ export default function WorkspacePage() {
       setErrorCode(e.code)
       setPhase('error')
     }
-  }, [resumeText, jobText, phase, setAnalysis])
+  }, [resumeText, jobText, documentType, phase, setAnalysis, setJobText, setResumeText])
+
+  const invalidateAnalysis = useCallback(() => {
+    if (analysis) clearAnalysis()
+    setCopilotOpen(false)
+  }, [analysis, clearAnalysis])
+
+  const handleResumeChange = useCallback((value: string) => {
+    setResumeText(value)
+    setResumeValidation(value.length > 0 && !value.trim()
+      ? 'Paste your resume to start the analysis. Spaces alone are not valid content.'
+      : '')
+    invalidateAnalysis()
+  }, [invalidateAnalysis, setResumeText])
+
+  const handleJobChange = useCallback((value: string) => {
+    setJobText(value)
+    invalidateAnalysis()
+  }, [invalidateAnalysis, setJobText])
+
+  const handleDocumentTypeChange = useCallback((value: DocumentType) => {
+    setDocumentType(value)
+    invalidateAnalysis()
+  }, [invalidateAnalysis, setDocumentType])
 
   const handleReanalyze = useCallback(() => {
     clearAnalysis()
@@ -170,8 +217,8 @@ export default function WorkspacePage() {
               </p>
             </div>
 
-            <ResumeInput value={resumeText} onChange={setResumeText} disabled={false} />
-            <JobInput value={jobText} onChange={setJobText} disabled={false} />
+            <ResumeInput value={resumeText} onChange={handleResumeChange} documentType={documentType} onDocumentTypeChange={handleDocumentTypeChange} validationMessage={resumeValidation || undefined} disabled={false} />
+            <JobInput value={jobText} onChange={handleJobChange} disabled={false} />
             <AnalyzeButton
               disabled={!hasResume || resumeTooLong}
               loading={false}
@@ -189,7 +236,7 @@ export default function WorkspacePage() {
         {phase === 'error' && (
           <div ref={errorRef} tabIndex={-1} className="animate-fade-in" style={{ outline: 'none', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ opacity: 0.45, pointerEvents: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <ResumeInput value={resumeText} onChange={() => {}} disabled />
+              <ResumeInput value={resumeText} onChange={() => {}} documentType={documentType} onDocumentTypeChange={() => {}} disabled />
               {hasJobDescription && <JobInput value={jobText} onChange={() => {}} disabled />}
             </div>
             <ErrorState message={errorMessage} code={errorCode} onRetry={handleRetry} />

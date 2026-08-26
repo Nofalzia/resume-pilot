@@ -134,6 +134,7 @@ export function CopilotPanel({
 
   const handleSuggestedPrompt = useCallback(
     (prompt: string) => {
+      if (isLoading) return
       setInput(prompt)
       // Submit on the next frame so input state has settled
       requestAnimationFrame(() => {
@@ -141,7 +142,7 @@ export function CopilotPanel({
         form?.requestSubmit()
       })
     },
-    [setInput]
+    [isLoading]
   )
 
   const isEmpty = messages.length === 0
@@ -283,6 +284,7 @@ export function CopilotPanel({
           {isEmpty ? (
             <EmptyChat
               hasAnalysis={!!analysis}
+              isLoading={isLoading}
               onPrompt={handleSuggestedPrompt}
             />
           ) : (
@@ -334,6 +336,7 @@ export function CopilotPanel({
         {/* Input area */}
         <CopilotInput
           input={input}
+          isOpen={isOpen}
           isLoading={isLoading}
           onInputChange={handleInputChange}
           onSubmit={handleSubmit}
@@ -348,9 +351,11 @@ export function CopilotPanel({
 
 function EmptyChat({
   hasAnalysis,
+  isLoading,
   onPrompt,
 }: {
   hasAnalysis: boolean
+  isLoading: boolean
   onPrompt: (p: string) => void
 }) {
   return (
@@ -400,6 +405,7 @@ function EmptyChat({
             <button
               key={prompt}
               type="button"
+              disabled={isLoading}
               onClick={() => onPrompt(prompt)}
               style={{
                 textAlign: 'left',
@@ -409,7 +415,8 @@ function EmptyChat({
                 borderRadius: 'var(--radius-md)',
                 fontSize: '13px',
                 color: 'var(--text-secondary)',
-                cursor: 'pointer',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                opacity: isLoading ? 0.55 : 1,
                 fontFamily: 'inherit',
                 lineHeight: '1.5',
                 transition: 'border-color var(--dur-fast), color var(--dur-fast)',

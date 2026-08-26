@@ -10,3 +10,4 @@ export type Priority = RecommendationItem['priority']
 export type Severity = BulletFeedbackItem['severity']
 
 export type WorkspacePhase = 'input' | 'analyzing' | 'results' | 'error'
+export type DocumentType = 'resume' | 'cv'

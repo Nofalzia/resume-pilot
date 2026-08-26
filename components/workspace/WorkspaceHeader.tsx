@@ -56,7 +56,7 @@ export function WorkspaceHeader({
           >
             RP
           </span>
-          <span style={{ fontSize: '15px', fontWeight: '600', letterSpacing: '-0.02em' }}>
+          <span className="workspace-brand-name" style={{ fontSize: '15px', fontWeight: '600', letterSpacing: '-0.02em' }}>
             Resume Pilot
           </span>
         </Link>

@@ -1,11 +1,36 @@
 import { convertToModelMessages, streamText, type UIMessage } from 'ai'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { buildCopilotSystemPrompt } from '@/lib/ai/copilot-prompt'
+import { AnalysisSchema } from '@/lib/ai/schema'
 import type { Analysis } from '@/lib/types'
 
 export const runtime = 'nodejs'
 
 const MAX_MESSAGES = 40
+const MAX_RESUME_CHARS = 12_000
+const MAX_MESSAGE_CHARS = 4_000
+
+function isValidMessage(message: unknown): message is UIMessage {
+  if (!message || typeof message !== 'object') return false
+
+  const candidate = message as { id?: unknown; role?: unknown; parts?: unknown }
+  if (
+    typeof candidate.id !== 'string' ||
+    !['user', 'assistant', 'system'].includes(candidate.role as string) ||
+    !Array.isArray(candidate.parts)
+  ) {
+    return false
+  }
+
+  return candidate.parts.every((part) => {
+    if (!part || typeof part !== 'object' || typeof (part as { type?: unknown }).type !== 'string') {
+      return false
+    }
+
+    const text = (part as { text?: unknown }).text
+    return typeof text !== 'string' || text.length <= MAX_MESSAGE_CHARS
+  })
+}
 
 function getClient() {
   const apiKey = process.env.OPENROUTER_API_KEY
@@ -24,13 +49,25 @@ export async function POST(request: Request) {
     resumeText = typeof body.resumeText === 'string' && body.resumeText.trim()
       ? body.resumeText.trim()
       : null
-    analysis   = body.analysis ?? null
+    const parsedAnalysis = body.analysis == null ? null : AnalysisSchema.safeParse(body.analysis)
+    if (parsedAnalysis && !parsedAnalysis.success) {
+      return new Response('Invalid analysis data', { status: 400 })
+    }
+    analysis = parsedAnalysis ? parsedAnalysis.data : null
   } catch {
     return new Response('Invalid request body', { status: 400 })
   }
 
   if (!messages.length) {
     return new Response('No messages provided', { status: 400 })
+  }
+
+  if (!messages.every(isValidMessage)) {
+    return new Response('Invalid message data', { status: 400 })
+  }
+
+  if (resumeText && resumeText.length > MAX_RESUME_CHARS) {
+    return new Response('Resume text is too long', { status: 400 })
   }
 
   // Cap history length to avoid runaway token usage
