@@ -26,8 +26,8 @@ const SK_DOCUMENT_TYPE = 'rp:docType'
 const STAGGER_MS  = 80
 
 export default function WorkspacePage() {
-  const [resumeText, setResumeText, clearResume]     = useSessionStorage<string>(SK_RESUME, '')
-  const [jobText, setJobText, clearJob]               = useSessionStorage<string>(SK_JOB, '')
+  const [resumeText, setResumeText]                  = useSessionStorage<string>(SK_RESUME, '')
+  const [jobText, setJobText]                        = useSessionStorage<string>(SK_JOB, '')
   const [analysis, setAnalysis, clearAnalysis]        = useSessionStorage<Analysis | null>(SK_ANALYSIS, null)
   const [documentType, setDocumentType]               = useSessionStorage<DocumentType>(SK_DOCUMENT_TYPE, 'resume')
 
@@ -44,14 +44,16 @@ export default function WorkspacePage() {
 
   useEffect(() => {
     if (analysis && !validAnalysis) clearAnalysis()
-    if (validAnalysis) setPhase('results')
+    if (validAnalysis) queueMicrotask(() => setPhase('results'))
   }, [analysis, clearAnalysis, validAnalysis])
 
   useEffect(() => {
     if (!resumeText.trim() && analysis) {
       clearAnalysis()
-      setCopilotOpen(false)
-      setPhase('input')
+      queueMicrotask(() => {
+        setCopilotOpen(false)
+        setPhase('input')
+      })
     }
   }, [analysis, clearAnalysis, resumeText])
 

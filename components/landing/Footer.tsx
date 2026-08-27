@@ -124,7 +124,7 @@ export function LandingFooter() {
               display: 'block', objectFit: 'cover',
             }}
           />
-          <span style={{ fontSize: '13px', fontWeight: '500', color: 'rgba(255,255,255,0.3)' }}>
+          <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)' }}>
             Resume Pilot
           </span>
         </Link>
@@ -140,19 +140,19 @@ export function LandingFooter() {
               href={link.href}
               style={{
                 fontSize: '13px',
-                color: 'rgba(255,255,255,0.3)',
+                color: 'var(--text-secondary)',
                 textDecoration: 'none',
                 transition: 'color var(--dur-fast)',
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.7)' }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.3)' }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)' }}
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>
+        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0 }}>
           Built with Next.js, Vercel AI SDK, and OpenRouter.
         </p>
       </div>
