@@ -44,18 +44,16 @@ export function WorkspaceHeader({
           aria-label="Resume Pilot — home"
           style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', color: 'var(--text-primary)', flexShrink: 0 }}
         >
-          <span
+          <img
             aria-hidden="true"
+            src="/resume-pilot-logo.png"
+            alt=""
             style={{
               width: '28px', height: '28px',
-              background: 'var(--accent)',
               borderRadius: '7px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '12px', fontWeight: '800', color: '#080809', letterSpacing: '-0.03em',
+              display: 'block', objectFit: 'cover',
             }}
-          >
-            RP
-          </span>
+          />
           <span className="workspace-brand-name" style={{ fontSize: '15px', fontWeight: '600', letterSpacing: '-0.02em' }}>
             Resume Pilot
           </span>

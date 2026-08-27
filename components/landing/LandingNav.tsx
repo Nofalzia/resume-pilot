@@ -62,25 +62,19 @@ export function LandingNav() {
             aria-label="Resume Pilot home"
             style={{ display: 'flex', alignItems: 'center', gap: '9px', textDecoration: 'none' }}
           >
-            <span
+            <img
               aria-hidden="true"
+              src="/resume-pilot-logo.png"
+              alt=""
               style={{
                 width: '30px',
                 height: '30px',
-                background: 'var(--accent)',
                 borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px',
-                fontWeight: '800',
-                color: '#080809',
-                letterSpacing: '-0.03em',
+                display: 'block',
+                objectFit: 'cover',
                 flexShrink: 0,
               }}
-            >
-              RP
-            </span>
+            />
             <span
               style={{
                 fontSize: '15px',
@@ -138,7 +132,11 @@ export function LandingNav() {
 
       <style>{`
         @media (min-width: 640px) {
-          .nav-link-desktop { display: block !important; }
+          .nav-link-desktop {
+            display: inline-flex !important;
+            align-items: center;
+            min-height: 36px;
+          }
         }
       `}</style>
     </>

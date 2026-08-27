@@ -114,18 +114,16 @@ export function LandingFooter() {
           aria-label="Resume Pilot home"
           style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}
         >
-          <span
+          <img
             aria-hidden="true"
+            src="/resume-pilot-logo.png"
+            alt=""
             style={{
               width: '24px', height: '24px',
-              background: 'var(--accent)',
               borderRadius: '6px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '10px', fontWeight: '800', color: '#080809',
+              display: 'block', objectFit: 'cover',
             }}
-          >
-            RP
-          </span>
+          />
           <span style={{ fontSize: '13px', fontWeight: '500', color: 'rgba(255,255,255,0.3)' }}>
             Resume Pilot
           </span>

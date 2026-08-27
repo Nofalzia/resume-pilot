@@ -4,6 +4,7 @@ import { HowItWorks } from '@/components/landing/HowItWorks'
 import { FeatureGrid } from '@/components/landing/FeatureGrid'
 import { CTABand, LandingFooter } from '@/components/landing/Footer'
 import { ScrollReveal } from '@/components/landing/ScrollReveal'
+import { LandingSplash } from '@/components/landing/LandingSplash'
 
 /**
  * Landing page — server component at the top level.
@@ -16,6 +17,7 @@ import { ScrollReveal } from '@/components/landing/ScrollReveal'
 export default function LandingPage() {
   return (
     <>
+      <LandingSplash />
       <LandingNav />
 
       <main id="main-content">
