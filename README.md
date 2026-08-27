@@ -8,6 +8,10 @@ Resume Pilot is a browser-based AI resume reviewer for job seekers. Paste a resu
 
 Resume feedback is often generic, disconnected from the target role, or difficult to act on. Resume Pilot turns plain-text resume content into specific, role-aware next steps without requiring an account or permanent storage.
 
+## Design Inspiration
+
+Resume Pilot's visual direction was inspired by the FlyRank website, particularly its dark premium visual language, emerald-led color palette, contrast, typography direction, visual hierarchy, spacing, and modern AI product feel. The interface was independently designed and implemented for this internship capstone; it is not an official FlyRank product and does not claim FlyRank branding or design-system ownership.
+
 ## Features
 
 - Resume and CV analysis from pasted plain text.
@@ -89,11 +93,11 @@ Never commit `.env.local` or expose the OpenRouter key to browser code.
 
 ## Testing
 
-Vitest covers prompt branches, schema bounds, API validation and safe failure paths, plus shared Button behavior. The latest run passed 14 tests in 6 files. See [docs/testing.md](docs/testing.md) for commands and measured coverage.
+Vitest covers prompt branches, schema bounds, API validation and safe failure paths, plus shared UI behavior. The latest run passed 19 tests in 7 files with 56.12% statement coverage. See [docs/testing.md](docs/testing.md) for commands and measured coverage.
 
 ## Accessibility & Performance
 
-The 2026-08-27 axe-core rerun found zero violations on `/` and `/workspace`; eight landing contrast checks remained inconclusive. Lighthouse against production returned Performance 73, Accessibility 96, Best Practices 96, and SEO 100. Details and limitations are in [docs/accessibility-performance.md](docs/accessibility-performance.md).
+The 2026-08-27 axe-core rerun found zero violations on `/` and `/workspace`; eight landing contrast checks remained inconclusive. Lighthouse against production returned Performance 73, Accessibility 96, Best Practices 96, and SEO 100. A clean rebuilt local production bundle measured Performance 72 after image and hydration optimizations, so the deployed target still requires a future release and further performance work. Details and limitations are in [docs/accessibility-performance.md](docs/accessibility-performance.md).
 
 ## Deployment & Operations
 

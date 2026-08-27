@@ -1,6 +1,5 @@
-'use client'
-
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function LandingNav() {
   return (
@@ -22,8 +21,6 @@ export function LandingNav() {
           textDecoration: 'none',
           transition: 'top 0.1s',
         }}
-        onFocus={(e) => { e.currentTarget.style.top = '1rem' }}
-        onBlur={(e) => { e.currentTarget.style.top = '-100%' }}
       >
         Skip to main content
       </a>
@@ -62,10 +59,13 @@ export function LandingNav() {
             aria-label="Resume Pilot home"
             style={{ display: 'flex', alignItems: 'center', gap: '9px', textDecoration: 'none' }}
           >
-            <img
+            <Image
               aria-hidden="true"
               src="/resume-pilot-logo.png"
               alt=""
+              width={30}
+              height={30}
+              priority
               style={{
                 width: '30px',
                 height: '30px',
@@ -121,8 +121,6 @@ export function LandingNav() {
                 transition: 'background var(--dur-fast) var(--ease-out)',
                 whiteSpace: 'nowrap',
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--accent-hover)' }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--accent)' }}
             >
               Analyze resume
             </Link>
@@ -130,15 +128,7 @@ export function LandingNav() {
         </div>
       </nav>
 
-      <style>{`
-        @media (min-width: 640px) {
-          .nav-link-desktop {
-            display: inline-flex !important;
-            align-items: center;
-            min-height: 36px;
-          }
-        }
-      `}</style>
+      <style>{`@media (min-width: 640px) { .nav-link-desktop { display: inline-flex !important; align-items: center; min-height: 36px; } }`}</style>
     </>
   )
 }

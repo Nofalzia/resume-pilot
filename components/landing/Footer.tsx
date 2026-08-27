@@ -1,6 +1,5 @@
-'use client'
-
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function CTABand() {
   return (
@@ -61,16 +60,6 @@ export function CTABand() {
             letterSpacing: '-0.02em',
             transition: 'background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out)',
           }}
-          onMouseEnter={(e) => {
-            const el = e.currentTarget as HTMLElement
-            el.style.background = 'var(--accent-hover)'
-            el.style.transform = 'translateY(-1px)'
-          }}
-          onMouseLeave={(e) => {
-            const el = e.currentTarget as HTMLElement
-            el.style.background = 'var(--accent)'
-            el.style.transform = 'translateY(0)'
-          }}
         >
           Analyze my resume — free
           <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"
@@ -114,10 +103,12 @@ export function LandingFooter() {
           aria-label="Resume Pilot home"
           style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}
         >
-          <img
+          <Image
             aria-hidden="true"
             src="/resume-pilot-logo.png"
             alt=""
+            width={24}
+            height={24}
             style={{
               width: '24px', height: '24px',
               borderRadius: '6px',
@@ -144,8 +135,6 @@ export function LandingFooter() {
                 textDecoration: 'none',
                 transition: 'color var(--dur-fast)',
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.7)' }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)' }}
             >
               {link.label}
             </Link>

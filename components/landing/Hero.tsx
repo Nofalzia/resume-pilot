@@ -1,5 +1,3 @@
-'use client'
-
 import Link from 'next/link'
 import { HeroCSSScene } from './HeroCSSScene'
 
@@ -125,16 +123,6 @@ export function Hero() {
                 transition: 'background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out)',
                 whiteSpace: 'nowrap',
               }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget as HTMLElement
-                el.style.background = '#059669'
-                el.style.transform = 'translateY(-1px)'
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget as HTMLElement
-                el.style.background = '#10B981'
-                el.style.transform = 'translateY(0)'
-              }}
             >
               Analyze my resume
               <ArrowIcon />
@@ -152,16 +140,6 @@ export function Hero() {
                 fontSize: '14px', fontWeight: '500', textDecoration: 'none',
                 transition: 'color var(--dur-fast), border-color var(--dur-fast)',
                 whiteSpace: 'nowrap',
-              }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget as HTMLElement
-                el.style.color = 'rgba(255,255,255,1)'
-                el.style.borderColor = 'rgba(255,255,255,0.4)'
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget as HTMLElement
-                el.style.color = 'rgba(255,255,255,0.7)'
-                el.style.borderColor = 'rgba(255,255,255,0.2)'
               }}
             >
               See how it works

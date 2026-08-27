@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 
 interface WorkspaceHeaderProps {
@@ -44,10 +45,12 @@ export function WorkspaceHeader({
           aria-label="Resume Pilot — home"
           style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', color: 'var(--text-primary)', flexShrink: 0 }}
         >
-          <img
+          <Image
             aria-hidden="true"
             src="/resume-pilot-logo.png"
             alt=""
+            width={28}
+            height={28}
             style={{
               width: '28px', height: '28px',
               borderRadius: '7px',

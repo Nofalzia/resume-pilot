@@ -3,6 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function ResumeCopilot() {
   const [input, setInput] = useState("");
@@ -41,7 +42,7 @@ export default function ResumeCopilot() {
       <header className="border-b border-zinc-200 bg-white px-6 py-5">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-zinc-900">
-            <img src="/resume-pilot-logo.png" alt="" aria-hidden="true" className="h-full w-full object-cover" />
+            <Image src="/resume-pilot-logo.png" alt="" aria-hidden="true" width={40} height={40} className="h-full w-full object-cover" />
           </div>
 
           <div>
@@ -114,7 +115,7 @@ export default function ResumeCopilot() {
                   {message.role === "assistant" && (
                     <div className="mb-2 flex items-center gap-2">
                       <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-lg bg-zinc-900">
-                        <img src="/resume-pilot-logo.png" alt="" aria-hidden="true" className="h-full w-full object-cover" />
+                        <Image src="/resume-pilot-logo.png" alt="" aria-hidden="true" width={28} height={28} className="h-full w-full object-cover" />
                       </div>
 
                       <span className="text-xs font-semibold text-zinc-500">
@@ -144,7 +145,7 @@ export default function ResumeCopilot() {
             {status === "submitted" && (
               <div className="mb-6 flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-lg bg-zinc-900">
-                  <img src="/resume-pilot-logo.png" alt="" aria-hidden="true" className="h-full w-full object-cover" />
+                  <Image src="/resume-pilot-logo.png" alt="" aria-hidden="true" width={28} height={28} className="h-full w-full object-cover" />
                 </div>
 
                 <div className="rounded-xl bg-white px-4 py-3 shadow-sm ring-1 ring-zinc-200">

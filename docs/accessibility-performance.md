@@ -29,6 +29,10 @@ Production landing page, fetched 2026-08-27:
 
 Notable measured performance values: LCP 3.3s, total blocking time 660ms, main-thread work 2.7s, and estimated unused JavaScript savings of 122 KiB. These remain future optimization opportunities. No score is fabricated or rounded upward.
 
+After the local optimization pass, a clean rebuilt local production bundle measured Performance **72**, Accessibility **100**, Best Practices **96**, and SEO **100** in the latest Lighthouse run. Local values are included for engineering comparison only; they are not presented as the deployed production result. The local run measured LCP 3.9s, total blocking time 560ms, main-thread work 2.4s, and estimated unused JavaScript savings of 126 KiB. Lighthouse results vary between runs on this Windows environment. The deployed production score remains 73 until these changes are deployed.
+
+Concrete performance changes made: migrated seven local logo uses from native `<img>` tags to `next/image` with explicit dimensions, eliminating all seven ESLint image warnings, and removed unnecessary client hydration from static landing navigation, hero wrapper, and footer event handlers while preserving CSS hover/focus behavior. The hero scene and splash remain client components because they require browser APIs and timed animation. The Performance >=85 target was not reached in the measured run; further bundle and main-thread optimization is still required.
+
 ## Final verification
 - The local build and TypeScript checks pass.
 - Axe reported no violations on the landing and workspace pages after the contrast fix.

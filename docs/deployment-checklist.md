@@ -11,12 +11,15 @@ Run date: 2026-08-27
 - [x] `npm run test -- --coverage` passed; result recorded in [testing.md](testing.md).
 - [x] `npm run typecheck` passed.
 - [x] `npm run build` passed.
+- [ ] Latest image/hydration optimization changes deployed to Vercel.
 - [x] Environment variable names documented without values.
 - [x] `.env*` files are ignored by Git; no `.env.local` is tracked.
 - [x] Landing and workspace accessibility flows audited with axe-core.
 - [x] Production landing page audited with Lighthouse.
 - [x] Production deployment source is the connected GitHub repository `Nofalzia/resume-pilot` and Vercel project URL above. The exact deployed commit was not asserted locally.
 - [x] API failure paths verified by tests for malformed, missing, oversized, and invalid input.
+
+The currently recorded deployed Lighthouse Performance score is 73. The latest optimized local production run measured 72, and these changes have not been deployed in this work session, so the Performance >=85 target is not claimed as satisfied.
 
 ## Dependency audit note
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 
 export function LandingSplash() {
   const [isVisible, setIsVisible] = useState(true)
@@ -26,7 +27,7 @@ export function LandingSplash() {
       <div className="landing-splash__grid" />
       <div className="landing-splash__content">
         <div className="landing-splash__mark">
-          <img src="/resume-pilot-logo.png" alt="" />
+          <Image src="/resume-pilot-logo.png" alt="" width={72} height={72} priority />
         </div>
         <div className="landing-splash__wordmark">Resume Pilot</div>
         <div className="landing-splash__status">

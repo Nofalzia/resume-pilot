@@ -17,8 +17,8 @@ npm run test -- --coverage
 ## Latest result
 Run date: 2026-08-27
 
-- `npm run test`: **14 tests passed in 6 test files**.
-- `npm run test -- --coverage`: **14 tests passed in 6 test files**.
-- Coverage: **19.35% statements, 16.47% branches, 10.71% functions, 19.73% lines** across the configured application include set.
+- `npm run test`: **19 tests passed in 7 test files**.
+- `npm run test -- --coverage`: **19 tests passed in 7 test files**.
+- Coverage: **56.12% statements, 64.77% branches, 53.57% functions, 57.23% lines** across the configured application include set.
 
 The percentage is intentionally reported as measured. The suite is focused on validation, prompt contracts, and a representative UI component; it is not a claim of full application coverage.
