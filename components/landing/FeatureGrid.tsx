@@ -47,6 +47,7 @@ export function FeatureGrid() {
   return (
     <section
       aria-labelledby="features-heading"
+      className="features-section"
       style={{
         padding: '96px 1.5rem',
         borderTop: '1px solid var(--border)',
@@ -85,22 +86,24 @@ export function FeatureGrid() {
         </div>
 
         <ul
+          className="features-grid"
           style={{
             listStyle: 'none',
             margin: 0,
             padding: 0,
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '2px',
+            gap: '24px',
           }}
           aria-label="Features"
         >
           {FEATURES.map((feature) => (
             <li
               key={feature.title}
+              className="feature-card"
               style={{
-                background: feature.accent ? 'var(--accent-muted)' : 'var(--surface-1)',
-                border: `1px solid ${feature.accent ? 'rgba(45,232,176,0.18)' : 'var(--border)'}`,
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 'var(--radius-xl)',
                 padding: '28px',
                 display: 'flex',
@@ -110,9 +113,10 @@ export function FeatureGrid() {
             >
               <span
                 aria-hidden="true"
+                className="feature-card-icon"
                 style={{
                   fontSize: '20px',
-                  color: feature.accent ? 'var(--accent)' : 'var(--text-muted)',
+                  color: 'rgba(52,211,153,0.7)',
                   lineHeight: 1,
                 }}
               >
@@ -123,7 +127,7 @@ export function FeatureGrid() {
                   style={{
                     fontSize: '15px',
                     fontWeight: '600',
-                    color: feature.accent ? 'var(--accent)' : 'var(--text-primary)',
+                    color: 'var(--text-primary)',
                     margin: 0,
                     letterSpacing: '-0.01em',
                   }}

@@ -9,7 +9,6 @@ export function Hero() {
       aria-labelledby="hero-heading"
       className="hero-section"
       style={{
-        minHeight: '100dvh',
         display: 'flex',
         alignItems: 'center',
         padding: '96px 1.5rem 64px',
@@ -47,7 +46,7 @@ export function Hero() {
       >
         {/* ── Text column ──────────────────────────────────────── */}
         <div
-          className="animate-fade-up"
+          className="animate-fade-up hero-copy"
           style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '560px' }}
         >
           {/* Eyebrow pill */}
@@ -80,6 +79,7 @@ export function Hero() {
           {/* Headline */}
           <h1
             id="hero-heading"
+            className="hero-heading"
             style={{
               fontSize: 'clamp(36px, 6vw, 58px)',
               fontWeight: '700',
@@ -99,7 +99,7 @@ export function Hero() {
           <p
             style={{
               fontSize: 'clamp(15px, 2vw, 17px)',
-              color: 'var(--text-secondary)',
+              color: 'rgba(255,255,255,0.55)',
               lineHeight: 1.7,
               margin: 0,
               maxWidth: '480px',
@@ -114,24 +114,25 @@ export function Hero() {
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
             <Link
               href="/workspace"
+              className="hero-primary-cta"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 padding: '13px 24px',
-                background: 'var(--accent)', color: '#080809',
-                borderRadius: 'var(--radius-lg)',
-                fontSize: '15px', fontWeight: '700', textDecoration: 'none',
-                letterSpacing: '-0.02em',
+                background: '#10B981', color: '#080809',
+                borderRadius: 'var(--radius-xl)',
+                fontSize: '15px', fontWeight: '600', textDecoration: 'none',
+                letterSpacing: '-0.01em',
                 transition: 'background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out)',
                 whiteSpace: 'nowrap',
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement
-                el.style.background = 'var(--accent-hover)'
+                el.style.background = '#059669'
                 el.style.transform = 'translateY(-1px)'
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement
-                el.style.background = 'var(--accent)'
+                el.style.background = '#10B981'
                 el.style.transform = 'translateY(0)'
               }}
             >
@@ -141,25 +142,26 @@ export function Hero() {
 
             <a
               href="#how-it-works"
+              className="hero-secondary-cta"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '6px',
                 padding: '13px 20px',
-                background: 'transparent', color: 'var(--text-secondary)',
-                border: '1px solid var(--border-strong)',
-                borderRadius: 'var(--radius-lg)',
+                background: 'transparent', color: 'rgba(255,255,255,0.7)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: 'var(--radius-xl)',
                 fontSize: '14px', fontWeight: '500', textDecoration: 'none',
                 transition: 'color var(--dur-fast), border-color var(--dur-fast)',
                 whiteSpace: 'nowrap',
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement
-                el.style.color = 'var(--text-primary)'
-                el.style.borderColor = 'var(--border-focus)'
+                el.style.color = 'rgba(255,255,255,1)'
+                el.style.borderColor = 'rgba(255,255,255,0.4)'
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement
-                el.style.color = 'var(--text-secondary)'
-                el.style.borderColor = 'var(--border-strong)'
+                el.style.color = 'rgba(255,255,255,0.7)'
+                el.style.borderColor = 'rgba(255,255,255,0.2)'
               }}
             >
               See how it works

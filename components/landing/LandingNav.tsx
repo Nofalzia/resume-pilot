@@ -30,12 +30,13 @@ export function LandingNav() {
 
       <nav
         aria-label="Main navigation"
+        className="landing-nav"
         style={{
-          position: 'fixed',
+          position: 'sticky',
           top: 0,
           left: 0,
           right: 0,
-          zIndex: 40,
+          zIndex: 50,
           borderBottom: '1px solid var(--border)',
           background: 'rgba(8,8,9,0.82)',
           backdropFilter: 'blur(14px)',

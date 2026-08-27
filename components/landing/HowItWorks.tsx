@@ -27,6 +27,7 @@ export function HowItWorks() {
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-heading"
+      className="how-it-works-section"
       style={{
         padding: '96px 1.5rem',
         borderTop: '1px solid var(--border)',
@@ -67,13 +68,14 @@ export function HowItWorks() {
 
         {/* Steps */}
         <ol
+          className="steps-grid"
           style={{
             listStyle: 'none',
             margin: 0,
             padding: 0,
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '2px',
+            gap: '24px',
           }}
           aria-label="Steps to use Resume Pilot"
         >
@@ -83,6 +85,7 @@ export function HowItWorks() {
               style={{
                 background: 'var(--surface-1)',
                 border: '1px solid var(--border)',
+                borderTop: `2px solid ${['rgba(52,211,153,0.25)', 'rgba(52,211,153,0.55)', 'rgba(52,211,153,0.9)'][i]}`,
                 borderRadius: 'var(--radius-xl)',
                 padding: '32px 28px',
                 display: 'flex',
@@ -92,25 +95,6 @@ export function HowItWorks() {
                 overflow: 'hidden',
               }}
             >
-              {/* Step number — large background character */}
-              <span
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  top: '-12px',
-                  right: '20px',
-                  fontSize: '80px',
-                  fontWeight: '800',
-                  color: 'var(--surface-2)',
-                  lineHeight: 1,
-                  letterSpacing: '-0.05em',
-                  pointerEvents: 'none',
-                  userSelect: 'none',
-                }}
-              >
-                {step.number}
-              </span>
-
               {/* Step indicator dot */}
               <div
                 style={{

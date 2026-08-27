@@ -6,10 +6,11 @@ export function CTABand() {
   return (
     <section
       aria-labelledby="cta-heading"
+      className="cta-section"
       style={{
-        padding: '80px 1.5rem',
+        padding: '96px 1.5rem',
         borderTop: '1px solid var(--border)',
-        background: 'var(--surface-1)',
+        background: 'radial-gradient(ellipse 50% 60% at 50% 0%, rgba(52,211,153,0.06) 0%, transparent 70%)',
       }}
     >
       <div
@@ -26,6 +27,7 @@ export function CTABand() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <h2
             id="cta-heading"
+            className="cta-heading"
             style={{
               fontSize: 'clamp(26px, 4vw, 38px)',
               fontWeight: '700',
@@ -44,14 +46,15 @@ export function CTABand() {
 
         <Link
           href="/workspace"
+          className="cta-primary-cta"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '8px',
             padding: '14px 28px',
-            background: 'var(--accent)',
+            background: '#10B981',
             color: '#080809',
-            borderRadius: 'var(--radius-lg)',
+            borderRadius: 'var(--radius-xl)',
             fontSize: '15px',
             fontWeight: '700',
             textDecoration: 'none',
@@ -77,7 +80,7 @@ export function CTABand() {
           </svg>
         </Link>
 
-        <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0 }}>
+        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.35)', margin: 0 }}>
           Session-only — nothing is stored permanently.
         </p>
       </div>
@@ -88,6 +91,7 @@ export function CTABand() {
 export function LandingFooter() {
   return (
     <footer
+      className="landing-footer"
       style={{
         borderTop: '1px solid var(--border)',
         padding: '28px 1.5rem',
@@ -122,7 +126,7 @@ export function LandingFooter() {
           >
             RP
           </span>
-          <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)' }}>
+          <span style={{ fontSize: '13px', fontWeight: '500', color: 'rgba(255,255,255,0.3)' }}>
             Resume Pilot
           </span>
         </Link>
@@ -138,19 +142,19 @@ export function LandingFooter() {
               href={link.href}
               style={{
                 fontSize: '13px',
-                color: 'var(--text-muted)',
+                color: 'rgba(255,255,255,0.3)',
                 textDecoration: 'none',
                 transition: 'color var(--dur-fast)',
               }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)' }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)' }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.7)' }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.3)' }}
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0 }}>
+        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>
           Built with Next.js, Vercel AI SDK, and OpenRouter.
         </p>
       </div>
