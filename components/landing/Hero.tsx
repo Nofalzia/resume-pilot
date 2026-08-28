@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { HeroCSSScene } from './HeroCSSScene'
+import Image from 'next/image'
 
 export function Hero() {
   return (
@@ -165,7 +165,13 @@ export function Hero() {
             of 78 out of 100 and keyword matching, and a job alignment card showing
             64% match to a Senior Frontend Engineer role.
           </p>
-          <HeroCSSScene />
+          <Image
+            src="/images.png"
+            alt=""
+            width={1024}
+            height={1024}
+            className="hero-image"
+          />
         </div>
       </div>
 
@@ -178,12 +184,25 @@ export function Hero() {
           .hero-visual {
             animation: fade-up 500ms var(--ease-out) 160ms both;
           }
+          .hero-image {
+            max-width: 440px;
+          }
         }
         @media (max-width: 899px) {
           .hero-visual {
             /* On mobile, scene is centred with a short delay */
             animation: fade-in 500ms var(--ease-out) 120ms both;
           }
+          .hero-image {
+            max-width: 420px;
+          }
+        }
+        .hero-image {
+          display: block;
+          width: 100%;
+          height: auto;
+          margin: 0 auto;
+          border-radius: var(--radius-xl);
         }
       `}</style>
     </section>

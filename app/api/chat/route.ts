@@ -1,5 +1,6 @@
 import { convertToModelMessages, streamText, type UIMessage } from 'ai'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
+import { AI_MODEL } from '@/lib/ai/config'
 import { buildCopilotSystemPrompt } from '@/lib/ai/copilot-prompt'
 import { AnalysisSchema } from '@/lib/ai/schema'
 import type { Analysis } from '@/lib/types'
@@ -77,7 +78,7 @@ export async function POST(request: Request) {
     const openrouter = getClient()
 
     const result = streamText({
-      model: openrouter(process.env.COPILOT_MODEL ?? 'anthropic/claude-3.5-sonnet'),
+      model: openrouter(process.env.COPILOT_MODEL ?? process.env.ANALYSIS_MODEL ?? AI_MODEL),
       system: buildCopilotSystemPrompt(resumeText, analysis),
       messages: await convertToModelMessages(trimmedMessages),
       temperature: 0.6,
