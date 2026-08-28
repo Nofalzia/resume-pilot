@@ -61,7 +61,7 @@ export function LandingNav() {
           >
             <Image
               aria-hidden="true"
-              src="/resume-pilot-logo.png"
+              src="/images.png"
               alt=""
               width={30}
               height={30}
