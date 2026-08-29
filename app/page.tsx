@@ -18,7 +18,7 @@ export default function LandingPage() {
   return (
     <>
       <LandingSplash />
-      <LandingNav />
+      {/* <LandingNav /> */}
 
       <main id="main-content">
         {/* Above fold — no reveal, just the CSS entry animation on the text column */}
