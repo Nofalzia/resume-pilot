@@ -1,4 +1,4 @@
-import { LandingNav } from '@/components/landing/LandingNav'
+// import { LandingNav } from '@/components/landing/LandingNav'
 import { Hero } from '@/components/landing/Hero'
 import { HowItWorks } from '@/components/landing/HowItWorks'
 import { FeatureGrid } from '@/components/landing/FeatureGrid'
